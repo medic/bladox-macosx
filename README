@@ -147,7 +147,7 @@ Extras
         If you're not debugging, you'll likely want to use the kernel named
         `kernel-TSIM-1.5.24.bin`. Try something like:
 
-            $ btldr -t -d/dev/cu.usbserial-00002006
+            $ btldr -s -t -d/dev/cu.usbserial-00002006
 
         If you encounter difficulty, try adding the `-l` option. This will
         instruct `btldr` to use an older (but simpler and less error-prone)
