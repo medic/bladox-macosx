@@ -1,0 +1,118 @@
+
+Compiling for Bladox's AVR on Mac OS X
+======================================
+
+This short guide will explain how to get a cross-compiler -- targeting the `avr`
+processor/architecture -- up and running on Mac OS X 10.6 or later. This process
+makes use of existing and freely-available binary packages. It does not (yet)
+contain information related to building GCC from source.
+
+
+Getting started
+---------------
+
+    (0) Read the `README` file in this package before doing anything.
+        To produce usable `.trb` files, you'll need a special patched
+        version of `avr-objdump` to be somewhere in your `PATH`. If
+        you're not sure how to do this, follow the instructions in the
+        `README` file.
+
+
+    (1) Obtain a copy of GCC targeting the AVR architecture. It's important
+        that you use version 3.2, 3.3, or 3.4. Versions 4 and higher are
+        known to have problems that prevent proper linking and/or binary
+        translation from occurring.
+
+        To simplify this guide, we'll be using Crosspack-AVR, a Mac OS X
+        port of `avr-gcc`. We've mirrored the most recent release containing
+        a 3.x version of GCC here:
+
+            https://scri.pt/get/crosspack-avr-20100115.dmg
+
+
+    (2) One you've downloaded the file above, mount the disk image and
+        start the installation. Crosspack-AVR will install to its own
+        directory beneath /usr/local, and create a symbolic link. This
+        typically looks something like:
+
+            /usr/local/CrossPack-AVR -> CrossPack-AVR-20100115
+            /usr/local/CrossPack-AVR-20100115
+
+
+    (3) Make sure you have the patched version of `avr-objdump` in your
+        `PATH`. If you followed the instructions in the `README` file,
+        this should be the case. You can double-check by running:
+
+            $ avr-objdump 2>&1 | grep -- --turbo
+
+        If you see the following output:
+
+            --turbo                  TURBO output
+            --turbo-verbose          TURBO verbose
+
+        ...you have the patched version and your `PATH` is set correctly.
+        If you see no output, or anything substantially different from
+        the above, please recheck your `PATH` and make sure it's pointing
+        to the `avr-objdump` provided in this package.
+
+
+    (4) Add CrossPack-AVR directory to your binary and library search paths.
+        Assuming the installation directories match those given in step
+        [2], and you're using `bash` or `sh` as a shell, you can accomplish
+        this via:
+
+            $ export PATH="$PATH:/usr/local/CrossPack-AVR/bin"
+
+            $ export DYLD_LIBRARY_PATH=" \
+                $DYLD_LIBRARY_PATH:/usr/local/CrossPack-AVR/lib"
+
+
+    (5) With the new compiler in your `PATH`, we'll use a helper script
+        to select the appropriate GCC version. Run the following, either
+        as root or as the same user that installed CrossPack-AVR:
+
+            $ avr-gcc-select 3
+
+        If the operation is successful, you'll see the following output:
+
+            Current default compiler: gcc 3
+
+        If you see any other output, or if your shell cannot locate the
+        `avr-gcc-select` script, recheck your environment variables from
+        step [4] and try again.
+
+
+    (6) Verify that you're pointed to the proper cross-compiler, by
+        running the following:
+
+            $ avr-gcc --version
+
+        You should see output similar to this:
+
+            avr-gcc (GCC) 3.4.6
+
+            Copyright (C) 2006 Free Software Foundation, Inc.
+            This is free software; see the source for copying conditions.
+            There is NO warranty; not even for MERCHANTABILITY or FITNESS
+            FOR A PARTICULAR PURPOSE.
+
+        If you see information about any other version of GCC, check to make
+        sure you don't have a system-installed or ports-installed version of
+        `avr-gcc` in the way.
+
+
+    (7) If you've made it this far, you're ready to try the compiler out.
+        Grab the source code for a parallel SIM application, open the
+        Makefile to ensure that the `TURBO_DIR` variable points to this
+        package's `turbo-devel` directory, and then type `make`.
+
+        (N.B. If you type `make` in the top-level directory of this package,
+        some symbolic links will be created that you may find helpful)
+
+
+Credits
+-------
+
+    David Brown
+    david@medicmobile.org
+

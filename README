@@ -13,6 +13,7 @@ SIM platform on Mac OS X 10.6 or higher. We've included the following packages:
 This package does not contain a compiler or linker. To compile new parallel SIM
 applications from the original source code, you'll need to download `avr-gcc`
 for Mac OS X (i.e. a GCC cross-compiler targeting AVR) as a separate package.
+For more information, take a look at `README.compiler`.
 
 
 Getting started
