@@ -27,7 +27,7 @@ Getting started
         the archive in your home directory, issue the following commands:
 
 
-            $ cd ~/bladox-macosx-1.5.16
+            $ cd ~/bladox-macosx-1.5.24/
             $ rm -f bin && ln -s utilities/i386 bin
 
 
@@ -42,7 +42,7 @@ Getting started
         placed the utilities in your home directory, you can issue the following
         command:
 
-            $ export PATH="~/bladox-macosx-1.5.16/bin:$PATH"
+            $ export PATH="~/bladox-macosx-1.5.24/bin:$PATH"
 
 
     (3) Plug the Turbo programmer 2 in to your computer, using the included USB
