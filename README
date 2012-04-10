@@ -1,0 +1,171 @@
+
+Bladox Cable/Program Utilities for Mac OS X
+===========================================
+
+This package contains everything you need to get started with the Bladox Turbo
+SIM platform on Mac OS X 10.6 or higher. We've included the following packages:
+
+    * turbo-cable-utils: AT-based program loading utilities
+    * turbo-prog-utils: Full set of utilities for the Turbo Programmer 2
+    * turbo-devel: Full development headers and (compiled) C library
+    * binutils: ELF to TRB converter (avr-objdump), and selected ELF utilities
+
+This package does not contain a compiler or linker. To compile new parallel SIM
+applications from the original source code, you'll need to download `avr-gcc`
+for Mac OS X (i.e. a GCC cross-compiler targeting AVR) as a separate package.
+
+
+Getting started
+---------------
+
+    (0) Extract the archive, then check for a symbolic link named `bin`
+        (at the top-level of the archive directory). If you're on a system
+        that supports 64-bit executables, you can proceed without changing
+        anything. If your system only supports 32-bit executables, then you'll
+        need to adjust this link. If you're using bash and have extracted
+        the archive in your home directory, issue the following commands:
+
+
+            $ cd ~/bladox-macosx-1.5.16
+            $ rm -f bin && ln -s utilities/i386 bin
+
+
+    (1) Mount the disk image named `drivers/FTDIUSBSerialDriver_v2_2_17.dmg`
+        that was provided with this archive. This is the FTDI USB-serial adapter
+        driver. The Turbo Programmer 2 (a.k.a. developer board) contains an FTDI
+        USB-serial chip; this driver will allow Mac OS X to talk to it directly.
+        Double-click the installer and follow the instructions.
+
+
+    (2) Add the Bladox utilities to your PATH. If you're using bash and have
+        placed the utilities in your home directory, you can issue the following
+        command:
+
+            $ export PATH="~/bladox-macosx-1.5.16/bin:$PATH"
+
+
+    (3) Plug the Turbo programmer 2 in to your computer, using the included USB
+        cable. You should see a green LED light up on the programmer. To make
+        sure it'd been detected properly, run:
+
+            $ sudo dmesg
+
+        You should see a final two lines of output similar to the following:
+
+            AppleUSBCDC: start - initDevice failed
+            FTDIUSBSerialDriver: 0 4036001 start - ok
+
+        Ignore the first line; the final line indicates a successful start.
+        If you don't see this message, check your USB connection and/or cable.
+        If you're using VMware, check to make sure that the device isn't
+        connected to a guest operating system.
+
+
+    (4) Next, look in /dev for a new device node. The new device special file
+        is provided by the FTDI driver from [1], and should take the following
+        form:
+
+            /dev/cu.usbserial-00002006
+
+        This will be your new serial port device, which we'll provide to the
+        Bladox cable/program utilities later. If your device is named
+        differently (but still starts with cu.usbserial) please type the name
+        you found instead.
+
+
+    (5) Find a .trb file that you'd like to upload to a Turbo SIM device.
+        Place the Turbo SIM (i.e. parallel SIM) beneath an ordinary (regular,
+        working) SIM card, taking care to line up the eight gold-colored pins.
+
+        The word 'BLADOX' (on the parallel SIM) should be facing upward; the
+        circle-and-X logo should be facing downward. The regular carrier SIM
+        should be on top of the parallel SIM, and the SIMLOC connector should be
+        beneath both.
+
+        Using your hand or an appropriate clip, align the sandwiched pair of
+        SIMs with the SIMLOC connector on the Turbo Programmer 2, again taking
+        care to line up the edges and pins. Press down hard.
+        
+        (N.B. Please don't attempt to slide the parallel SIM / regular SIM
+        sandwich in to the SIMLOC connector's hinged tray. It won't fit; it's
+        only tall enough to hold a single regular SIM. You'll have to hold the
+        assembly in place manually. A silicone shielded spoon rest (designed to
+        clip on to the side of a sautee pan) seems to work particularly well at
+        holding everything together).
+
+
+    (6) With the whole assembly (Turbo Programmer 2, regular SIM, and parallel
+        Turbo SIM) securely held together, run the following command:
+
+            $ cemu -d/dev/cu.usbserial-00002006 --rm-apps
+
+        You should see output similar to the following (the numbers will vary):
+
+            SIM mode initialized, sim.trb
+            SIM_ATR: 3B 9F 95 80 1F C7 80 31 E0 73 FE 21 1B 64 07 53 63 02
+            OK. No Error
+
+        If you see the 'NO SIM' message, please realign the parallel SIM,
+        ordinary SIM, and SIMLOC connector. It can be difficult to get this
+        right, and will certainly take a few tries.
+
+
+    (7) If all went well in [6], locate your .trb file (we'll call it
+        hello.trb for example purposes), and issue the following command:
+
+            $ cemu -d/dev/cu.usbserial-00002006 --app hello.trb
+
+        You should see a message similar to the one you saw in [6], followed
+        by a progress indicator (showing bytes written and the total .trb size).
+
+
+    (8) Once you see the 'OK. No Error' message, you're done! Place the regular
+        SIM and parallel SIM in to an inexpensive phone, in the sandwich
+        configuration. Phones will have a larger SIM slot/tray, so that both
+        will fit comfortably. Do not force anything in, it should fit easily.
+
+
+    (9) Navigate to the phone's 'SIM Services' menu (location will vary, based
+        upon phone model and brand). Have fun!
+
+
+Extras
+------
+
+    (a) The Bladox development kit -- including header files, binary objects,
+        and linker scripts -- is provided in the 'turbo-devel' package. These
+        are useful for compiling new .trb files (avr-gcc sold separately).
+
+
+    (b) There are two kernels provided in `kernels/`, both of which contain
+        support for runtime flash programming (read: writing to flash memory,
+        also known as PROGMEM). If you have older hardware and wish to make use
+        of this feature, you'll need to re-flash the hardware using the `btldr`
+        utility.
+
+        If you're not debugging, you'll likely want to use the kernel named
+        `kernel-TSIM-1.5.24.bin`. Try something like:
+
+            $ btldr -t -d/dev/cu.usbserial-00002006
+
+        If you encounter difficulty, try adding the `-l` option. This will
+        instruct `btldr` to use an older (but simpler and less error-prone)
+        protocol.
+
+
+    (c) Source code is available for all included tools, minus the firmware
+        that ships as part of the turbo-devel. Look here:
+
+            https://scri.pt/get/bladox-source-1.5.24.tar.bz2
+
+
+Credits
+-------
+
+    David Brown
+    david@medicmobile.org
+
+    Pavel, David, and the rest of the team at Bladox
+    info@bladox.com
+
+
