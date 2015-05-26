@@ -24,10 +24,10 @@ Getting started
         translation from occurring.
 
         To simplify this guide, we'll be using Crosspack-AVR, a Mac OS X
-        port of `avr-gcc`. We've mirrored the most recent release containing
+        port of `avr-gcc`. An older known-working release containing
         a 3.x version of GCC here:
 
-            https://scri.pt/get/crosspack-avr-20100115.dmg
+            https://www.obdev.at/downloads/crosspack/CrossPack-AVR-20100115.dmg
 
 
     (2) One you've downloaded the file above, mount the disk image and
